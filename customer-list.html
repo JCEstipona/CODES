@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script src = "jquery-3.2.1.min.js" type = "text/javascript"></script> 
+    <script src = "knockout-3.4.2.js" type = "text/javascript"></script>
+    <script src = "knockout.mapping-latest.js" type = "text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="C:\Users\Carlo\Desktop\CODES\app.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">   
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3><a href="" onclick="retrieveCustomers(sorter(), search(), pageCounter())">Customers</a></h3>
+        </div>
+          <div class="panel-body">
+                <b>Sort by:</b>
+                <select name="sorter" id="sort" data-bind="value: sorter">
+                  <option disabled selected value>Sort..</option>
+                  <option id="desc" value="desc">Descending</option>
+                  <option id="asc" value="asc">Ascending</option>
+                </select>
+                <b>Search By:</b>
+                <select name="options" id ="optn" data-bind="value: options">
+                  <option disabled selected value>Search..</option>
+                  <option id="all" value="all">All</option>
+                  <option id = "id" value="id">ID</option>
+                  <option id = "fname" value="fname">First Name</option>
+                  <option id = "mname" value="mname">Middle Name</option>
+                  <option id = "lname" value="lname">Last Name</option>
+                  <option id = "suffix" value="suffix">Suffix</option>
+                  <option id = "date_of_birth" value="date_of_birth">Date of Birth</option>
+                  <option id = "agent_id" value="agent_id">Agent ID</option>
+                  <option id = "msisdn" value="msisdn">Msisdn</option>
+                  <option id = "idtype" value="idtype">ID Type</option>
+                  <option id = "idnumber" value="idnumber">ID Number</option>
+                  <option id = "date_created" value="date_created">Date Created</option>
+                  <option id = "occupation" value="occupation">Occupation</option>
+                  <option id = "address" value="address">Address</option>
+                  <option id = "employer" value="employer">Employer</option>
+                  <option id = "nationality" value="nationality">Nationality</option>
+                  <option id = "place_of_birth" value="place_of_birth">Place of Birth</option>
+                </select>
+                <!-- <input type="text" class="form-control" name="sorter" id = "sort" data-bind="value: sorter">  -->   
+                <div class="input-group">
+                        <input type="text" class="form-control" name="search" id = "src" data-bind="value: search">
+                          <div class="input-group-btn">
+                            <button class="btn btn-primary" id = "btnSearch" value="Search">
+                              <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                          </div>
+                </div>
+            <div class="table-responsive">
+              <div class="form-group">
+              </div>
+
+              <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>First_Name</th>
+                  <th>Middle_Name</th>
+                  <th>Last_Name</th>
+                  <th>Suffix</th>
+                  <th>Date_of_Birth</th>
+                  <th>Agent_ID</th>
+                  <th>Msisdn</th>
+                  <th>ID_Type</th>
+                  <th>ID_Number</th>
+                  <th>Date_Created</th>
+                  <th>Occupation</th>
+                  <th>Address</th>
+                  <th>Employer</th>
+                  <th>Nationality</th>
+                  <th>Place_of_Birth</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              
+              <tbody data-bind='foreach: customers'>
+                <tr>
+                  <td data-bind='text: id'></td>
+                  <td data-bind='text: fname'></td>
+                  <td data-bind='text: mname'></td>
+                  <td data-bind='text: lname'></td>
+                  <td data-bind='text: suffix'></td>
+                  <td data-bind='text: date_of_birth'></td>
+                  <td data-bind='text: agent_id'></td>
+                  <td data-bind='text: msisdn'></td>
+                  <td data-bind='text: idtype'></td>
+                  <td data-bind='text: idnumber'></td>
+                  <td data-bind='text: date_created'></td>
+                  <td data-bind='text: occupation'></td>
+                  <td data-bind='text: address'></td>
+                  <td data-bind='text: employer'></td>
+                  <td data-bind='text: nationality'></td>
+                  <td data-bind='text: place_of_birth'></td>
+                </tr>
+              </tbody>
+
+              
+              </table>
+            </div>
+          </div>
+        </div>
+    </div>
+      <div class="btn-group">
+      <button class = "btn btn-primary" data-bind="click:function(data,event){prvPage(currentPage)}">Prev</button>
+
+        <div class ="btn-group" data-bind="with: pagination()">
+          <div class="btn-group" data-bind="foreach: new Array(noOfPage())">
+            <button  class = "btn btn-primary" data-bind="value: $index()+1, text: $index()+1, click: function(data, event){page($index()+1)}"></button>
+          </div>
+        </div>
+
+      <button class = "btn btn-primary" data-bind="click:function(data,event){nxtPage(currentPage,lastPage)}">Next</button>
+      </div>
+  </div>
+</body>
+<script>
+$(document).ready(function(){  
+    $("#btnSearch").click(function(){
+        var pageCounter ='';
+        var sorter = $("#sort").val();
+        var options = $("#optn").val();
+        var srch = $("#src").val();
+
+        retrieveCustomers(sorter, options, srch, pageCounter);
+    })
+   
+    var Customer = function(customer){
+        this.id = ko.observable();
+        this.fname = ko.observable();
+        this.mname = ko.observable();
+        this.lname = ko.observable();
+        this.suffix = ko.observable();
+        this.date_of_birth = ko.observable();
+        this.agent_id = ko.observable();
+        this.msisdn = ko.observable();
+        this.idtype = ko.observable();
+        this.idnumber = ko.observable();
+        this.date_created = ko.observable();
+        this.occupation = ko.observable();
+        this.address = ko.observable();
+        this.employer = ko.observable();
+        this.nationality = ko.observable();
+        this.place_of_birth = ko.observable();
+        
+
+        if (customer){
+
+            this.update(customer)
+        }
+    }
+    Customer.prototype.update = function(customer){
+        this.id = ko.observable(customer.id);
+        this.fname = ko.observable(customer.fname);
+        this.mname = ko.observable(customer.mname);
+        this.lname = ko.observable(customer.lname);
+        this.suffix = ko.observable(customer.suffix);
+        this.date_of_birth = ko.observable(customer.date_of_birth);
+        this.agent_id = ko.observable(customer.agent_id);
+        this.msisdn = ko.observable(customer.msisdn);
+        this.idtype = ko.observable(customer.idtype);
+        this.idnumber = ko.observable(customer.idnumber);
+        this.date_created = ko.observable(customer.date_created);
+        this.occupation = ko.observable(customer.occupation);
+        this.address = ko.observable(customer.address);
+        this.employer = ko.observable(customer.employer);
+        this.nationality = ko.observable(customer.nationality);
+        this.place_of_birth = ko.observable(customer.place_of_birth);
+        
+    }
+
+    var Paginate = function(pagination){
+        this.noOfPage = ko.observable(pagination);
+        this.currentPage = ko.observable(pagination);
+        this.lastPage = ko.observable(pagination);
+    }
+
+
+    var customerListViewModel = (function(){
+       var self = this;
+       customers = ko.observableArray();
+       pageCounter = ko.observable(1);
+       self.sorter = ko.observable('asc');
+       self.options = ko.observable('all');
+       self.search = ko.observable('');
+       self.currentPage = ko.observable();
+       self.lastPage = ko.observable();
+       self.pages = ko.observableArray();
+       self.pagination = ko.observable();
+       pages = ko.observableArray();
+
+       retrieveCustomers = function(sorter, options, search, pageCounter){
+            customers([]);
+             
+
+            $.getJSON('http://127.0.0.1:8000/api/api-customer/search?sort=' + sorter +'&option='+ options +'&search='+ search +'&page='+ pageCounter, function(data) { 
+                  //customers = ko.observableArray('');
+                  ko.utils.arrayForEach(data.customer.data,function(k) {
+                    console.log(k);
+                    customers.push(new Customer(k));
+                  });   
+                  currentPage = data.customer.current_page;
+                  lastPage = data.customer.last_page; 
+                  noOfPages = Math.ceil(data.customer.total / data.customer.per_page);
+                  pagination(new Paginate(noOfPages,currentPage,lastPage));
+              });
+          }
+       page = function(pageNo){
+
+          var pageCounter = pageNo;
+          var sorter = $("#sort").val();
+          var options = $("#optn").val();
+          var srch = $("#src").val();
+          retrieveCustomers(sorter, options, srch, pageCounter);
+        }
+      prvPage = function(currentPage){
+        if (currentPage != 1 ){
+          var pageCounter = currentPage - 1;
+          var sorter = $("#sort").val();
+          var options = $("#optn").val();
+          var srch = $("#src").val();
+          retrieveCustomers(sorter, options, srch, pageCounter);
+        } 
+        else{}
+      }
+      nxtPage = function(currentPage, lastPage){
+        if(currentPage < lastPage){
+          var pageCounter = currentPage + 1;
+          var sorter = $("#sort").val();
+          var options = $("#optn").val();
+          var srch = $("#src").val();
+          retrieveCustomers(sorter, options, srch, pageCounter);
+        }
+        else {}
+      }
+      });
+
+    ko.applyBindings(customerListViewModel);
+
+    retrieveCustomers(sorter(), options(), search(), pageCounter());
+
+});
+
+</script>
+</html>
