@@ -1,0 +1,9 @@
+
+customer:
+  build: ./
+  ports:
+    - "9015:80"
+  volumes:
+    - //C//Users//Carlo//Documents//APP//Customer.knockout:/var/www/html
+    
+
